@@ -65,7 +65,7 @@ def rasterize_meshes(
           Concretely, if ``pix_to_face[n, y, x, k] = f`` then
           ``zbuf[n, y, x, k] = face_verts[f, 2]``. Pixels hit by fewer than
           faces_per_pixel are padded with -1.
-        - **barycentric**: FloatTensor of shape
+        - **bary_coords**: FloatTensor of shape
           (N, image_size, image_size, faces_per_pixel, 3)
           giving the barycentric coordinates in NDC units of the
           nearest faces at each pixel, sorted in ascending z-order.
@@ -74,13 +74,14 @@ def rasterize_meshes(
           the barycentric coords for pixel (y, x) relative to the face
           defined by ``face_verts[f]``. Pixels hit by fewer than
           faces_per_pixel are padded with -1.
-        - **pix_dists**: FloatTensor of shape
+        - **dists**: FloatTensor of shape
           (N, image_size, image_size, faces_per_pixel)
-          giving the signed Euclidean distance (in NDC units) in the
-          x/y plane of each point closest to the pixel. Concretely if
+          giving the signed squared Euclidean distance (in NDC units) in the
+          x/y plane to the closest triangle. Concretely if
           ``pix_to_face[n, y, x, k] = f`` then ``pix_dists[n, y, x, k]`` is the
-          squared distance between the pixel (y, x) and the face given
-          by vertices ``face_verts[f]``. Pixels hit with fewer than
+          signed squared Euclidean distance between the pixel (y, x) and the face given
+          by vertices ``face_verts[f]`` (positive if the pixel (y, x) is outside
+          the face, negative if it is inside). Pixels hit with fewer than
           ``faces_per_pixel`` are padded with -1.
     """
     verts_packed = meshes.verts_packed()
